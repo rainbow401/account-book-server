@@ -1,4 +1,4 @@
-package com.rainbow.auth;
+package com.rainbow.auth.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
