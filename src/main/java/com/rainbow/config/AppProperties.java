@@ -1,15 +1,25 @@
 package com.rainbow.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 @ConfigurationProperties(prefix = "wx")
-@Component
+@Configuration
 public class AppProperties {
 
     private String appId;
 
     private String appSecret;
+
+    private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getAppId() {
         return appId;

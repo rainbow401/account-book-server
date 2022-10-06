@@ -4,6 +4,7 @@ import com.rainbow.util.SignUtil;
 import com.rainbow.util.XmlMapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,7 +43,7 @@ public class MessageController {
     }
 
 
-    @GetMapping("/public/message")
+    @PostMapping("/public/message")
     public void handler(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("utf-8");
         response.setContentType("text/xml;charset=utf-8");
