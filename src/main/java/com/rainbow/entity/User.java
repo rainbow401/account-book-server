@@ -1,4 +1,15 @@
 package com.rainbow.entity;
 
-public class User {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class User extends AutoIdEntity {
+
+    private String openId;
+
+    private String username;
+
+    private String password;
 }
