@@ -1,17 +1,9 @@
 package com.rainbow.util;
 
 
-import com.rainbow.vo.WechatNotifyRequestVO;
-import com.thoughtworks.xstream.XStream;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SignUtil {
 

@@ -1,10 +1,11 @@
 package com.rainbow.message;
 
-import com.rainbow.exceptions.MessageFormatException;
+import com.rainbow.wx.MessageParam;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,21 +20,17 @@ public class MessageHandlerFactory implements ApplicationContextAware {
         Map<String, MessageHandler> beansMap = applicationContext.getBeansOfType(MessageHandler.class);
         for (String e : beansMap.keySet()) {
             MessageHandler messageHandler = beansMap.get(e);
-            messageHandlers.put(messageHandler.getStrategy(), messageHandler);
+            String[] strategyArray = messageHandler.getStrategyArray();
+            for (String strategy : strategyArray) {
+                if (!StringUtils.hasText(strategy)) {
+                    throw new RuntimeException("策略不能为空");
+                }
+                messageHandlers.put(strategy, messageHandler);
+            }
         }
     }
 
-    public MessageHandler createHandler(String strategy, String message) {
-
-        if (messageHandlers.containsKey(strategy)) {
-            MessageHandler messageHandler = messageHandlers.get(strategy);
-            if (!messageHandler.checkPattern(message)) {
-                throw new MessageFormatException();
-            }
-
-            return messageHandler;
-        }
-
-        return null;
+    public MessageHandler createHandler(MessageParam param) {
+        return messageHandlers.get(param.getStrategy());
     }
 }

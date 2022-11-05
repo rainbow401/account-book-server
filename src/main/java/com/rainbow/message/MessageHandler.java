@@ -1,10 +1,12 @@
 package com.rainbow.message;
 
+import com.rainbow.wx.MessageParam;
+
 public interface MessageHandler {
 
-    void handler(String message);
+    String handler(MessageParam param);
 
-    boolean checkPattern(String message);
+    boolean checkPattern(String data);
 
-    String getStrategy();
+    String[] getStrategyArray();
 }

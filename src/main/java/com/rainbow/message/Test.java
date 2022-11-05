@@ -1,11 +1,10 @@
 package com.rainbow.message;
 
-import com.rainbow.message.handlers.AddHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+@RequestMapping("test")
 public class Test {
 
-    public static void main(String[] args) {
-        AddHandler addHandler = new AddHandler();
-        addHandler.checkPattern("sss");
-    }
+//    private reduce()
+
 }
