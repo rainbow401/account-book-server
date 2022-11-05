@@ -36,10 +36,53 @@ public class XmlMapUtil {
             map.put(e.getName(), e.getText());
             System.out.println(e.getName() + "--->" + e.getText());
         }
-        is.close();
         return map;
     }
 
+
+
+//    /**
+//     * 将XML转换成Map集合
+//     */
+//    public static Map<String, String> xmlToMap(HttpServletRequest request)
+//            throws IOException, DocumentException {
+//        String body = request.getParameter("body");
+//        String encrypt_type = request.getParameter("encrypt_type");
+//        String appid = request.getParameter("appid");
+//        String token = request.getParameter("token");
+//        String encodingaeskey = request.getParameter("encodingaeskey");
+//        String post_type = request.getParameter("post_type");
+//
+//        Map<String, String> map = new HashMap<String, String>();
+//        map.put("body", body);
+//        map.put("encrypt_type", encrypt_type);
+//        map.put("appid", appid);
+//        map.put("token", token);
+//        map.put("encodingaeskey", encodingaeskey);
+//        map.put("post_type", post_type);
+//
+////        SAXReader reader = new SAXReader(); // 使用dom4j解析xml
+////        InputStream is= request.getInputStream(); // 从request中获取输入流
+////        Document doc = reader.read(is);
+////        Element root = doc.getRootElement(); // 获取根元素
+////        List<Element> list = root.elements(); // 获取所有节点
+////
+////        for (Element e : list) {
+////            map.put(e.getName(), e.getText());
+////            System.out.println(e.getName() + "--->" + e.getText());
+////        }
+////        is.close();
+//
+//        Document document = DocumentHelper.parseText(body);
+//        Element root = document.getRootElement(); // 获取根元素
+//        List<Element> list = root.elements(); // 获取所有节点
+//
+//        for (Element e : list) {
+//            map.put(e.getName(), e.getText());
+//            System.out.println(e.getName() + "--->" + e.getText());
+//        }
+//        return map;
+//    }
     /**
      * 将文本消息对象转换成XML
      */

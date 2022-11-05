@@ -1,14 +1,17 @@
 package com.rainbow.util;
 
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+@Slf4j
 public class SignUtil {
 
     // 与接口配置信息中的 Token 要一致
-    private static String token = "gede";
+    private static String token = "";
     /**
      * 验证签名
      * @param signature
@@ -18,6 +21,8 @@ public class SignUtil {
      */
     public static boolean checkSignature(String signature, String timestamp, String nonce) {
         String[] arr = new String[] { token, timestamp, nonce };
+        log.info("checkSignature -------------");
+        log.info("安全验证参数 arr: {}", Arrays.toString(arr));
         // 将 token、timestamp、nonce 三个参数进行字典序排序
         Arrays.sort(arr);
         StringBuilder content = new StringBuilder();
@@ -36,7 +41,8 @@ public class SignUtil {
             e.printStackTrace();
         }
 
-        content = null;
+        log.info("content:{}, tmpStr: {}", content.toString(), tmpStr);
+        log.info("signature: {}", signature);
         // 将 sha1 加密后的字符串可与 signature 对比，标识该请求来源于微信
         return tmpStr != null ? tmpStr.equals(signature.toUpperCase()) : false;
     }

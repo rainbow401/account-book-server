@@ -39,7 +39,8 @@ public class MessageController {
         String timestamp = request.getParameter("timestamp");
         String nonce = request.getParameter("nonce");
         log.info("echoStr: {}", echoStr);
-
+        log.info("timestamp: {}", timestamp);
+        log.info("nonce: {}", nonce);
         try {
             if (SignUtil.checkSignature(signature, timestamp, nonce)) {
                 PrintWriter out = response.getWriter();
@@ -59,7 +60,7 @@ public class MessageController {
     public void handler(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("utf-8");
         response.setContentType("text/xml;charset=utf-8");
-        PrintWriter out = response.getWriter();
+//        PrintWriter out = response.getWriter();
         String result = "";
         try {
             MessageParam param = convertParam(request);
@@ -78,9 +79,9 @@ public class MessageController {
 
         log.info("result : {}", result);
 
-        // 写入返回值
-        out.print(result);
-        out.close();
+//        // 写入返回值
+//        out.print(result);
+//        out.close();
     }
 
     private MessageParam convertParam(HttpServletRequest request) throws DocumentException, IOException {
@@ -100,13 +101,13 @@ public class MessageController {
         String[] itemArray = content.split("\\s\\s");
         for (int i = 0; i < itemArray.length; i++) {
             switch (i) {
-                case 1 -> {
+                case 0 -> {
                     param.setStrategy(itemArray[i]);
                 }
-                case 2 -> {
+                case 1 -> {
                     param.setData(itemArray[i]);
                 }
-                case 3 -> {
+                case 2 -> {
                     param.setMemo(itemArray[i]);
                 }
                 default -> {
