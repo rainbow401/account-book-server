@@ -1,15 +1,19 @@
 package com.rainbow.wx;
 
+import com.rainbow.config.AppProperties;
+import com.rainbow.entity.WeChatMessageDTO;
+import com.rainbow.entity.WeChatResponseMessage;
 import com.rainbow.exceptions.MessageFormatException;
 import com.rainbow.message.MessageHandler;
 import com.rainbow.message.MessageHandlerFactory;
 import com.rainbow.util.SignUtil;
-import com.rainbow.util.XmlMapUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.DocumentException;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Random;
 
 @Slf4j
 @RestController
@@ -26,6 +32,8 @@ import java.util.Map;
 public class MessageController {
 
     private final MessageHandlerFactory messageHandlerFactory;
+
+    private final AppProperties appProperties;
 
     /**
      * 微信公共号get请求，服务器安全性校验。
@@ -42,7 +50,7 @@ public class MessageController {
         log.info("timestamp: {}", timestamp);
         log.info("nonce: {}", nonce);
         try {
-            if (SignUtil.checkSignature(signature, timestamp, nonce)) {
+            if (SignUtil.checkSignature(signature, timestamp, nonce, appProperties.getToken())) {
                 PrintWriter out = response.getWriter();
                 out.print(echoStr);
                 out.close();
@@ -56,49 +64,51 @@ public class MessageController {
     }
 
 
-    @PostMapping("/public/message")
-    public void handler(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        request.setCharacterEncoding("utf-8");
-        response.setContentType("text/xml;charset=utf-8");
-//        PrintWriter out = response.getWriter();
-        String result = "";
+    @PostMapping(value = "/public/message", produces = MediaType.TEXT_XML_VALUE)
+    public WeChatResponseMessage handler(@RequestBody WeChatMessageDTO dto) throws IOException {
+        log.info("接收到消息:{}", dto);
+        String resultContent = null;
         try {
-            MessageParam param = convertParam(request);
+            MessageParam param = convertParam(dto);
             MessageHandler messageHandler = messageHandlerFactory.createHandler(param);
             if (messageHandler == null) {
                 throw new MessageFormatException("你说啥，我不懂");
             }
 
-            result = messageHandler.handler(param);
+            resultContent = messageHandler.handler(param);
         } catch (MessageFormatException e) {
-            result = e.getMessage();
+            resultContent = e.getMessage();
         } catch (Exception e) {
             e.printStackTrace();
-            result = "请稍后再试";
+            resultContent = "请稍后再试";
         }
 
-        log.info("result : {}", result);
+        WeChatResponseMessage responseMessage = new WeChatResponseMessage();
+        responseMessage.setFromUserName(appProperties.getDeveloperId());
+        responseMessage.setToUserName(dto.getFromUserName());
+        responseMessage.setCreateTime(LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(8)));
+        responseMessage.setMsgType("text");
+        responseMessage.setMsgId(getRandomLong());
+        responseMessage.setContent(resultContent);
 
-//        // 写入返回值
-//        out.print(result);
-//        out.close();
+        log.info("回复消息:{}", responseMessage);
+
+        return responseMessage;
     }
 
-    private MessageParam convertParam(HttpServletRequest request) throws DocumentException, IOException {
-        // 拿到微信客户端发来的请求并通过工具类解析为map格式
-        Map<String, String> map = XmlMapUtil.xmlToMap(request);
-        String toUserName = map.get("ToUserName");
-        String fromUserName = map.get("FromUserName");  //openid
-        String msgType = map.get("MsgType");
-        String content = map.get("Content");
-        String event = map.get("event");
-        log.info("param content: {}", map);
+    private Long getRandomLong() {
+        Random rd = new Random();
 
+        return (long) (int) (Math.random() * 900000 + 100000);
+    }
+
+    private MessageParam convertParam(WeChatMessageDTO dto) throws DocumentException, IOException {
+        log.info("parWeChatMessageDTO dto {}", dto);
         MessageParam param = new MessageParam();
-        param.setUserid(fromUserName);
-        param.setContent(content);
+        param.setUserid(dto.getFromUserName());
+        param.setContent(dto.getContent());
 
-        String[] itemArray = content.split("\\s\\s");
+        String[] itemArray = dto.getContent().split("！！");
         for (int i = 0; i < itemArray.length; i++) {
             switch (i) {
                 case 0 -> {

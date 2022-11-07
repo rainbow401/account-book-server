@@ -10,8 +10,6 @@ import java.util.Arrays;
 @Slf4j
 public class SignUtil {
 
-    // 与接口配置信息中的 Token 要一致
-    private static String token = "";
     /**
      * 验证签名
      * @param signature
@@ -19,7 +17,7 @@ public class SignUtil {
      * @param nonce
      * @return
      */
-    public static boolean checkSignature(String signature, String timestamp, String nonce) {
+    public static boolean checkSignature(String signature, String timestamp, String nonce, String token) {
         String[] arr = new String[] { token, timestamp, nonce };
         log.info("checkSignature -------------");
         log.info("安全验证参数 arr: {}", Arrays.toString(arr));

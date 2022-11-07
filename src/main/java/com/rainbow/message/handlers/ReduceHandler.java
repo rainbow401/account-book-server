@@ -10,8 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.regex.Pattern;
-
 @Component
 @RequiredArgsConstructor
 public class ReduceHandler extends CommonMessageHandler implements MessageHandler {
@@ -45,10 +43,6 @@ public class ReduceHandler extends CommonMessageHandler implements MessageHandle
             throw new MessageFormatException("数据格式为数字");
         }
 
-        return "操作成功";
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Pattern.matches("^[0-9]{1,9}(.{1}[0-9]{1,2})?$", "1.2"));
+        return String.format("操作成功 -%s", Double.parseDouble(param.getData()));
     }
 }

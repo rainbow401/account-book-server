@@ -43,6 +43,6 @@ public class IncreaseHandler extends CommonMessageHandler implements MessageHand
             throw new MessageFormatException("数据格式为数字");
         }
 
-        return "操作成功";
+        return String.format("操作成功 +%s", Double.parseDouble(param.getData()));
     }
 }

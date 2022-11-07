@@ -13,6 +13,16 @@ public class AppProperties {
 
     private String token;
 
+    private String developerId;
+
+    public String getDeveloperId() {
+        return developerId;
+    }
+
+    public void setDeveloperId(String developerId) {
+        this.developerId = developerId;
+    }
+
     public String getToken() {
         return token;
     }
