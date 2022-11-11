@@ -7,11 +7,13 @@ public class MessageParam {
 
     private String content;
 
-    private String strategy;
+    private String trigger;
 
     private String data;
 
     private String memo;
 
     private String userid;
+
+    private String event;
 }

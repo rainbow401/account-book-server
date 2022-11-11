@@ -4,6 +4,8 @@ import com.rainbow.config.AppProperties;
 import com.rainbow.entity.WeChatMessageDTO;
 import com.rainbow.entity.WeChatResponseMessage;
 import com.rainbow.exceptions.MessageFormatException;
+import com.rainbow.message.EventHandler;
+import com.rainbow.message.EventHandlerFactory;
 import com.rainbow.message.MessageHandler;
 import com.rainbow.message.MessageHandlerFactory;
 import com.rainbow.util.SignUtil;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.DocumentException;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +26,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Random;
 
 @Slf4j
 @RestController
@@ -32,6 +34,7 @@ import java.util.Random;
 public class MessageController {
 
     private final MessageHandlerFactory messageHandlerFactory;
+    private final EventHandlerFactory eventHandlerFactory;
 
     private final AppProperties appProperties;
 
@@ -68,19 +71,11 @@ public class MessageController {
     public WeChatResponseMessage handler(@RequestBody WeChatMessageDTO dto) throws IOException {
         log.info("接收到消息:{}", dto);
         String resultContent = null;
-        try {
-            MessageParam param = convertParam(dto);
-            MessageHandler messageHandler = messageHandlerFactory.createHandler(param);
-            if (messageHandler == null) {
-                throw new MessageFormatException("你说啥，我不懂");
-            }
 
-            resultContent = messageHandler.handler(param);
-        } catch (MessageFormatException e) {
-            resultContent = e.getMessage();
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultContent = "请稍后再试";
+        if (StringUtils.hasText(dto.getEvent())) {
+            resultContent = processEvent(dto);
+        } else {
+            resultContent = processMessage(dto);
         }
 
         WeChatResponseMessage responseMessage = new WeChatResponseMessage();
@@ -96,9 +91,29 @@ public class MessageController {
         return responseMessage;
     }
 
-    private Long getRandomLong() {
-        Random rd = new Random();
+    private String processEvent(WeChatMessageDTO dto) {
+        String resultContent;
+        EventHandler eventHandler = eventHandlerFactory.createEventHandler(dto.getEvent());
+        resultContent = eventHandler.handler(dto);
+        return resultContent;
+    }
 
+    private String processMessage(WeChatMessageDTO dto) {
+        String resultContent;
+        try {
+            MessageParam param = convertParam(dto);
+            MessageHandler messageHandler = messageHandlerFactory.createHandler(param);
+            resultContent = messageHandler.handler(param);
+        } catch (MessageFormatException e) {
+            resultContent = e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultContent = "请稍后再试";
+        }
+        return resultContent;
+    }
+
+    private Long getRandomLong() {
         return (long) (int) (Math.random() * 900000 + 100000);
     }
 
@@ -112,7 +127,7 @@ public class MessageController {
         for (int i = 0; i < itemArray.length; i++) {
             switch (i) {
                 case 0 -> {
-                    param.setStrategy(itemArray[i]);
+                    param.setTrigger(itemArray[i]);
                 }
                 case 1 -> {
                     param.setData(itemArray[i]);

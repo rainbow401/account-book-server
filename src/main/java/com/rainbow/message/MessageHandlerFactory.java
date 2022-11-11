@@ -1,5 +1,6 @@
 package com.rainbow.message;
 
+import com.rainbow.message.handlers.DefaultMessageHandler;
 import com.rainbow.wx.MessageParam;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -15,22 +16,26 @@ public class MessageHandlerFactory implements ApplicationContextAware {
 
     private final Map<String, MessageHandler> messageHandlers = new HashMap<>();
 
+    private final DefaultMessageHandler defaultMessageHandler = new DefaultMessageHandler();
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         Map<String, MessageHandler> beansMap = applicationContext.getBeansOfType(MessageHandler.class);
         for (String e : beansMap.keySet()) {
             MessageHandler messageHandler = beansMap.get(e);
-            String[] strategyArray = messageHandler.getStrategyArray();
-            for (String strategy : strategyArray) {
-                if (!StringUtils.hasText(strategy)) {
-                    throw new RuntimeException("策略不能为空");
+            if (!messageHandler.isDefault()) {
+                String[] triggerArray = messageHandler.getTriggerArray();
+                for (String trigger : triggerArray) {
+                    if (!StringUtils.hasText(trigger)) {
+                        throw new RuntimeException("策略不能为空，请为Handler设置触发条件Trigger");
+                    }
+                    messageHandlers.put(trigger, messageHandler);
                 }
-                messageHandlers.put(strategy, messageHandler);
             }
         }
     }
 
     public MessageHandler createHandler(MessageParam param) {
-        return messageHandlers.get(param.getStrategy());
+        return messageHandlers.getOrDefault(param.getTrigger(), defaultMessageHandler);
     }
 }

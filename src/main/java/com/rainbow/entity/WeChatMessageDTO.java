@@ -33,7 +33,7 @@ public class WeChatMessageDTO implements Serializable {
     private Long createTime;
 
     /**
-     * 消息类型: {@link com.small.nine.wxmp.config.WxConfig} MSG_TYPE_*
+     * 消息类型: MSG_TYPE_*
      */
     @XmlElement(name = "MsgType")
     private String msgType;
@@ -49,4 +49,7 @@ public class WeChatMessageDTO implements Serializable {
      */
     @XmlElement(name = "Content")
     private String content;
+
+    @XmlElement(name = "Event")
+    private String event;
 }

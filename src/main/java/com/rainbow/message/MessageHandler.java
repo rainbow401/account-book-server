@@ -6,7 +6,13 @@ public interface MessageHandler {
 
     String handler(MessageParam param);
 
-    boolean checkPattern(String data);
+    default boolean checkPattern(String data) {
+        return true;
+    }
 
-    String[] getStrategyArray();
+    String[] getTriggerArray();
+
+    default boolean isDefault() {
+        return false;
+    }
 }

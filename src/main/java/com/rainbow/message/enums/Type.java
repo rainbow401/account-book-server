@@ -12,7 +12,11 @@ public enum Type {
     FRUIT(3, "水果"),
     CLOTHES(4, "衣服"),
     DAILY(5, "生活用品"),
-    WAGES(6, "工资");
+    WAGES(6, "工资"),
+    RENT(7, "房租"),
+    ELECTRONIC_EQUIPMENT(8, "电子设备"),
+    OTHER(9, "其他"),
+    RECOVERY_OF_ARREARS(10, "收回欠款");
 
     private final Integer code;
 
